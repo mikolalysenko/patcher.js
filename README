@@ -1,0 +1,76 @@
+
+              _        _               _     
+             | |      | |             (_)    
+  _ __   __ _| |_  ___| |__   ___ _ __ _ ___ 
+ | '_ \ / _` | __|/ __| '_ \ / _ \ '__| / __|
+ | |_) | (_| | |_| (__| | | |  __/ | _| \__ \
+ | .__/ \__,_|\__|\___|_| |_|\___|_|(_) |___/
+ | |                                 _/ |    
+ |_|                                |__/     
+
+=================================================
+
+   A JSON patching and diffing library
+   
+    (c) 2011 Mikola Lysenko
+   
+=================================================
+
+1. About
+
+patcher.js is a simple javascript library for diffing and
+patching JSON documents.  This can be useful, for example,
+in a networked environment where retransmitting large JSON
+documents is too expensive.
+
+
+2. Example:
+
+>
+> //Start with two distinct objects on the server
+> // prev represents a copy of the state of the object on the client
+> // next represents a copy of the state of the object on the server
+> //
+> //1. Compute a patch
+> patch = patcher.computePatch(prev, next);
+> 
+> //2. Send patch over the network
+>
+> //3. Apply the patch on the client
+> patcher.applyPatch(prev, patch);
+> 
+> //Final invariant:
+> //   prev represents an equivalent object to JSON.parse(JSON.stringify(next))
+>
+
+
+
+3.  API
+
+There are two functions in patcher.js:
+
+  function computePatch(prev, next, update_in_place);
+
+  The argument prev is the object which the patch targets.
+  
+    * If update_in_place is set to true, then the function
+    will simultaneously update both prev and next at the same
+    time.
+    * If prev and next are equal, then the method returns null
+    * Constructing this patch requires time linear on the 
+    size of the two documents.
+    * Patches are computed at the level of the objects and
+    arrays.  String modifications are simply retransmitted
+    
+  
+  
+  function applyPatch(obj, patch)
+  
+  This function applies a patch to the JSON document obj
+
+
+4. Future
+
+  * More test cases!
+  * Use data types cleverly
+  * Binary serialization
