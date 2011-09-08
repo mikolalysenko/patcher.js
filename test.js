@@ -26,3 +26,5 @@ function printObj(obj) {
 //Test arrays
 
 //Test null
+
+//Objects with underscores

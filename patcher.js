@@ -46,8 +46,6 @@ function clone(obj) {
 // Computes a patch between a pair of json objects
 // Note that this assumes both prev and next are simple, acyclic
 // dictionaries.  This does not support serializing functions.
-// Also removals are stored in a special field called "_r", so 
-// don't name any variables that.
 //
 //  prev - Object we are patching from
 //  next - Object we are patching to
@@ -62,6 +60,10 @@ function computePatch(prev, next, update_in_place) {
   
   //Checks if an element common to prev and next 
   var processElement = function(id) {
+  
+    //Add _ to escape ids which start with _
+    var target_id = (typeof(id) == "string" && id.charAt(0) == "_" ? "_" + id : id);
+    
     //First, check if the element exists and types match
     if(id in prev && typeof(prev[id]) == typeof(next[id])) {
     
@@ -71,7 +73,7 @@ function computePatch(prev, next, update_in_place) {
         var res = computePatch(prev[id], next[id], update_in_place);
         if(res !== null) {
           has_updates = true;
-          updates[id] = res;
+          updates[target_id] = res;
         }
         return;
       }
@@ -84,10 +86,10 @@ function computePatch(prev, next, update_in_place) {
     
     //Add to update list
     has_updates = true;
-    updates[id] = clone(next[id]);
-
+    updates[target_id] = clone(next[id]);
+    
     if(update_in_place) {
-      prev[id] = updates[id];
+      prev[id] = updates[target_id];
     }
   };
   
@@ -123,7 +125,6 @@ function computePatch(prev, next, update_in_place) {
     }
   }
   
-  //If nothing changed, don't post an update
   if(removals.length > 0) {
     has_updates = true;
     updates["_r"] = removals;  
@@ -148,14 +149,17 @@ function applyPatch(obj, patch) {
   }
   
   for(i in patch) {
-    if(typeof(obj[i]) == typeof(patch[i]) &&
+    //Unescape underscore
+    var t = (typeof(i) == "string" && i.charAt(0) == "_" ? i.substring(1) : i);
+    
+    if(typeof(obj[t]) == typeof(patch[i]) &&
       typeof(patch[i]) == "object" &&
       patch[i] != null &&
-      (obj[i] instanceof Array) == (patch[i] instanceof Array)) {
-      applyPatch(obj[i], patch[i]);
+      (obj[t] instanceof Array) == (patch[i] instanceof Array)) {
+      applyPatch(obj[t], patch[i]);
       continue;
     }
-    obj[i] = patch[i]
+    obj[t] = patch[i]
   }
 };
 
