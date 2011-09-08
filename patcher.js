@@ -56,7 +56,7 @@ function clone(obj) {
 //    2. null if the objects are equal.
 //-------------------------------------------------------------
 function computePatch(prev, next, update_in_place) {
-  var updates = { }, removals = [ ], has_updates = false;
+  var updates = { }, has_updates = false;
   
   //Checks if an element common to prev and next 
   var processElement = function(id) {
@@ -97,12 +97,11 @@ function computePatch(prev, next, update_in_place) {
   if(next instanceof Array) {
     //Case 1: Arrays
     if(prev.length != next.length) {
-      for(var i=prev.length-1; i>next.length; --i) {
-        removals.push(i);
-      }
       if(update_in_place) {
         prev.length = next.length;
       }
+      has_updates = true;
+      updates["_r"] = next.length;
     }
     for(var i=next.length-1; i>=0; --i) {
       processElement(i);
@@ -110,14 +109,20 @@ function computePatch(prev, next, update_in_place) {
     
   } else {
     //Case 2: Objects
+    var removals = [];
     for(var i in prev) {
       if(!(i in next)) {
         removals.push(i);
       }
     }
-    if(update_in_place) {
-      for(var i=removals.length-1; i>=0; --i) {
-        delete prev[removals[i]];
+    if(removals.length > 0) {
+      has_updates = true;
+      updates["_r"] = (removals.length == 1 ? removals[0] : removals);
+      
+      if(update_in_place) {
+        for(var i=removals.length-1; i>=0; --i) {
+          delete prev[removals[i]];
+        }
       }
     }
     for(var i in next) {
@@ -125,10 +130,6 @@ function computePatch(prev, next, update_in_place) {
     }
   }
   
-  if(removals.length > 0) {
-    has_updates = true;
-    updates["_r"] = removals;  
-  }
   if(has_updates) {
     return updates;
   }
@@ -140,10 +141,21 @@ function computePatch(prev, next, update_in_place) {
 // Applies a patch to an object
 //-------------------------------------------------------------
 function applyPatch(obj, patch) {
-  var removals = patch["_r"], i;
-  if(removals) {
-    for(i=0; i<removals.length; ++i) {
-      delete obj[removals[i]];
+  var i;
+  if("_r" in patch) {
+    if(obj instanceof Array) {
+      obj.length = patch["_r"];
+    }
+    else {
+      var removals = patch["_r"];
+      
+      if(removals instanceof Array) {
+        for(i=0; i<removals.length; ++i) {
+          delete obj[removals[i]];
+        }
+      } else {
+        delete obj[removals];
+      }
     }
     delete patch["_r"];
   }
