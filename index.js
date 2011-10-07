@@ -235,7 +235,6 @@ function applyPatch(obj, patch) {
   }
 };
 
-
 //Add methods to patcher
 exports.clone        = clone;
 exports.assign       = assign;

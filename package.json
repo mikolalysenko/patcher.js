@@ -1,11 +1,11 @@
 {
     "name" : "patcher.js",
-    "version" : "0.1",
+    "version" : "0.0.1",
     "description" : "Object patching and replication for javascript",
     "main" : "./index.js",
     "keywords" : [
         "replication",
-        "patching",
+        "patching"
     ],
     "repository" : {
         "type" : "git",
