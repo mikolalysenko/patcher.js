@@ -38,10 +38,11 @@ function clone(obj) {
 // Assigns an object to another object doing minimal extra copies
 //-------------------------------------------------------------
 function assign(target, src) {
-
+  /*
   if("equals" in src && src.equals(target)) {
     return false;
   }
+  */
 
   var different = false;  
   
