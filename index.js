@@ -1,3 +1,5 @@
+"use strict";
+
 //-------------------------------------------------------------
 // Javascript/Node.js JSON diffing/patching utility
 //
@@ -38,11 +40,9 @@ function clone(obj) {
 // Assigns an object to another object doing minimal extra copies
 //-------------------------------------------------------------
 function assign(target, src) {
-  /*
   if("equals" in src && src.equals(target)) {
     return false;
   }
-  */
 
   var different = false;  
   
@@ -52,9 +52,9 @@ function assign(target, src) {
       different = true;
     }
     
-    for(var i=0; i<src.length; ++i) {
-      var t_obj = target[i],
-          s_obj = src[i],
+    for(var id=0; i<src.length; ++i) {
+      var t_obj = target[id],
+          s_obj = src[id],
           type = typeof(s_obj);
           
       if(typeof(t_obj) !== type) {
