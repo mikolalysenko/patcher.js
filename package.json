@@ -1,5 +1,5 @@
 {
-    "name" : "patcher.js",
+    "name" : "patcher",
     "version" : "0.0.1",
     "description" : "Object patching and replication for javascript",
     "main" : "./index.js",

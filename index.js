@@ -38,12 +38,47 @@ function clone(obj) {
 // Assigns an object to another object doing minimal extra copies
 //-------------------------------------------------------------
 function assign(target, src) {
-  var different = false;
+
+  if("equals" in src && src.equals(target)) {
+    return false;
+  }
+
+  var different = false;  
   
   if(src instanceof Array) {
     if(src.length !== target.length)  {
       target.length = src.length;
       different = true;
+    }
+    
+    for(var i=0; i<src.length; ++i) {
+      var t_obj = target[i],
+          s_obj = src[i],
+          type = typeof(s_obj);
+          
+      if(typeof(t_obj) !== type) {
+        different = true;
+        target[id] = clone(s_obj);
+      }
+      else if(type === "object") {
+        if(s_obj === null) {
+          if(t_obj !== null) {
+            different = true;
+            target[id] = null;
+          }
+        }
+        else if(s_obj.constructor !== t_obj.constructor) {
+          different = true;
+          target[id] = clone(s_obj);
+        }
+        else if(assign(t_obj, s_obj)) {
+          different = true;
+        }
+      }
+      else if(t_obj !== s_obj) {
+        different = true;
+        target[id] = s_obj;
+      }
     }
   }
   else {
@@ -53,42 +88,37 @@ function assign(target, src) {
         delete target[id];
       }
     }
-  }
-  
-  for(var id in src) {
-    var t_obj = target[id],
-        s_obj = src[id],
-        type  = typeof(s_obj);
-    if(typeof(t_obj) !== type) {
-      different = true;
-      target[id] = clone(s_obj);
-    }
-    else if(type === "object") {
-      if(s_obj === null) {
-        if(t_obj !== null) {
-          different = true;
-          target[id] = null;
-        }
-      }
-      else if(s_obj.equals !== undefined) {
-        if(!s_obj.equals(t_obj)) {
-          different = true;
-          target[id] = clone(s_obj);
-        }
-      }
-      else if(s_obj.constructor !== t_obj.constructor) {
+
+    for(var id in src) {
+      var t_obj = target[id],
+          s_obj = src[id],
+          type  = typeof(s_obj);
+      if(typeof(t_obj) !== type) {
         different = true;
         target[id] = clone(s_obj);
       }
-      else if(assign(t_obj, s_obj)) {
+      else if(type === "object") {
+        if(s_obj === null) {
+          if(t_obj !== null) {
+            different = true;
+            target[id] = null;
+          }
+        }
+        else if(s_obj.constructor !== t_obj.constructor) {
+          different = true;
+          target[id] = clone(s_obj);
+        }
+        else if(assign(t_obj, s_obj)) {
+          different = true;
+        }
+      }
+      else if(t_obj !== s_obj) {
         different = true;
+        target[id] = s_obj;
       }
     }
-    else if(t_obj !== s_obj) {
-      different = true;
-      target[id] = s_obj;
-    }
   }
+  
   
   return different;
 }
@@ -117,14 +147,14 @@ function computePatch(prev, next, update_in_place) {
     var target_id = (typeof(id) === "string" && id.charAt(0) == "$" ? "$" + id : id);
     
     //First, check if the element exists and types match
-    if(id in prev && typeof(prev[id]) == typeof(next[id])) {
+    if(id in prev && typeof(prev[id]) === typeof(next[id])) {
     
       if(typeof(next[id]) === "object") {
       
         if(next[id].equals !== undefined && next[id].equals(prev[id])) {
           return;
         }
-        else if((prev[id] instanceof Array) == (next[id] instanceof Array) ) {
+        else if((prev[id] instanceof Array) === (next[id] instanceof Array) ) {
           //Object case
           var res = computePatch(prev[id], next[id], update_in_place);
           if(res !== null) {
@@ -134,7 +164,7 @@ function computePatch(prev, next, update_in_place) {
           return;
         }
       }
-      else if(prev[id] == next[id]) {
+      else if(prev[id] === next[id]) {
       
         //P.O.D. case
         return;
