@@ -52,7 +52,7 @@ function assign(target, src) {
       different = true;
     }
     
-    for(var id=0; i<src.length; ++i) {
+    for(var id=0; id<src.length; ++id) {
       var t_obj = target[id],
           s_obj = src[id],
           type = typeof(s_obj);
