@@ -1,7 +1,7 @@
 {
     "name" : "patcher",
-    "version" : "0.0.4",
-    "description" : "Object patching and replication for javascript",
+    "version" : "0.0.5",
+    "description" : "Object patching and replication for JavaScript",
     "main" : "./index.js",
     "keywords" : [
         "replication",
