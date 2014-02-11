@@ -150,7 +150,7 @@ function computePatch(prev, next, update_in_place) {
     //First, check if the element exists and types match
     if(id in prev && typeof(prev[id]) === typeof(next[id])) {
     
-      if(typeof(next[id]) === "object") {
+      if(next[id] && typeof(next[id]) === "object") {
       
         if(next[id].equals !== undefined && next[id].equals(prev[id])) {
           return;
