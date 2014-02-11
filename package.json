@@ -1,6 +1,6 @@
 {
     "name" : "patcher",
-    "version" : "0.0.5",
+    "version" : "0.0.6",
     "description" : "Object patching and replication for JavaScript",
     "main" : "./index.js",
     "keywords" : [
